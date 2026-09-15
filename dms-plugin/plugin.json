@@ -1,0 +1,12 @@
+{
+    "id": "ipadScreen",
+    "name": "iPad Second Screen",
+    "description": "Toggle the iPad second monitor (forced DP connector + wayvnc)",
+    "version": "1.0.0",
+    "author": "unknown",
+    "type": "widget",
+    "capabilities": ["dankbar-widget"],
+    "component": "./IpadScreenWidget.qml",
+    "icon": "tablet_mac",
+    "permissions": ["process"]
+}
