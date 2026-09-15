@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate a 128-byte EDID 1.4 blob for a virtual sink.
 
-Used by niri-screen-up.sh to give a force-enabled DRM connector a mode the
+Gives a force-enabled DRM connector a mode the
 iPad panel actually is (2160x1620). No cable is involved, so the timings only
 have to be self-consistent and inside the GPU's limits; they are
 CVT-reduced-blanking shaped.
@@ -15,8 +15,7 @@ the driver ever rejects the detailed timing, the connector still comes up with
 Pixel clock matters more than it looks. A connector with no CEA-861 extension
 block is treated as DVI, and NVIDIA enforces the 165 MHz single-link DVI
 ceiling: 2160x1620@60 needs 232 MHz and is rejected on HDMI-A-1, while the
-same EDID on DP-1 is accepted. Verified both ways on 580.178.04 -- see
-README.md. Use a DisplayPort connector.
+same EDID on DP-1 is accepted. See "Why DisplayPort" in README.md.
 """
 import sys
 

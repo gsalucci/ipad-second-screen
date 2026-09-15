@@ -1,15 +1,8 @@
-# Runtime state, and the keys generated for wayvnc's optional RSA-AES/TLS auth.
+# Runtime state: pidfiles, logs, sockets, the generated EDID.
 run/
 
-# XDG_CONFIG_HOME is pinned here so nothing leaks into ~/.config; its contents
-# are generated.
-xdg/
-
-# noVNC is vendored at run time, not committed: ./fetch-novnc.sh pulls it.
-vendor/
-
-# Host-specific values; see .env.example
+# Host-specific configuration; copy .env.example to .env.
 .env
 
-# Host-specific research report, not part of the published project
+# Local notes, not part of the published guide.
 RESEARCH.md

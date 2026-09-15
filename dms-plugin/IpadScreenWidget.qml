@@ -34,7 +34,7 @@ PluginComponent {
 
     function refresh() {
         Proc.runCommand(procKey + ".status",
-                        ["sh", "-c", toolDir + "/ipad-toggle.sh status"],
+                        ["sh", "-c", toolDir + "/second-screen status"],
                         (stdout, exitCode) => {
                             const s = (stdout || "").trim();
                             if (s === "down" || s === "up" || s === "connected")
@@ -49,7 +49,7 @@ PluginComponent {
         // Bringing the output up forces a DRM connector and waits for wayvnc to
         // bind, so give it a generous timeout rather than the default.
         Proc.runCommand(procKey + ".action",
-                        ["sh", "-c", toolDir + "/ipad-toggle.sh " + action + " >/dev/null 2>&1"],
+                        ["sh", "-c", toolDir + "/second-screen " + action + " >/dev/null 2>&1"],
                         (stdout, exitCode) => {
                             root.busy = false;
                             root.refresh();

@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# Use an iPad as a second monitor for a niri/Wayland desktop.
+#
+#   second-screen up        create the output and start streaming
+#   second-screen down      remove it
+#   second-screen toggle    up if down, down otherwise
+#   second-screen status    down | up | connected  (also the exit code 0 | 1 | 2)
+#
+# Configuration lives in .env -- see .env.example.
+
+ROOT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+# shellcheck source=lib/common.sh
+. "$ROOT_DIR/lib/common.sh"
+# shellcheck source=lib/display.sh
+. "$ROOT_DIR/lib/display.sh"
+# shellcheck source=lib/vnc.sh
+. "$ROOT_DIR/lib/vnc.sh"
+# shellcheck source=lib/ipad.sh
+. "$ROOT_DIR/lib/ipad.sh"
+
+cmd_up() {
+    require_config
+    running "$VNC_PID" && die "already up -- run 'second-screen down' first"
+    display_check
+    display_up
+    vnc_up
+    ipad_autoconnect
+
+    cat <<SUMMARY
+
+  niri now has a second monitor
+  ------------------------------------------------------------
+  connect to            ${BIND}:${PORT}
+  output                ${CONN}  ${W}x${H} @ scale ${SCALE}
+  logical size          $((W / SCALE))x$((H / SCALE)) at ${POS_X},${POS_Y}
+  send a window there   niri msg action move-window-to-monitor ${CONN}
+  remove it             second-screen down
+
+  Nothing persists across a reboot; run 'second-screen up' again after one.
+SUMMARY
+}
+
+cmd_down() {
+    vnc_down
+    display_down
+    say "second monitor removed"
+}
+
+cmd_status() {
+    if ! running "$VNC_PID"; then echo down; return 0; fi
+    if port_has_client "$PORT"; then echo connected; return 2; fi
+    echo up
+    return 1
+}
+
+cmd_toggle() {
+    if [[ "$(cmd_status)" == "down" ]]; then cmd_up; else cmd_down; fi
+}
+
+usage() { sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; }
+
+case "${1:-status}" in
+    up)     cmd_up ;;
+    down)   cmd_down ;;
+    toggle) cmd_toggle ;;
+    status) cmd_status ;;
+    -h|--help|help) usage ;;
+    *)      usage >&2; exit 64 ;;
+esac
