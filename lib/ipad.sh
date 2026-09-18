@@ -39,10 +39,15 @@ ipad_find() {
     fi
 
     base="$(printf '%s' "$BIND" | cut -d. -f1-3)"
+    # Wait on THESE pids only. A bare `wait` also waits on the jobs table, which
+    # still holds the wayvnc job started earlier in this run; setsid reparented
+    # it, so bash spins on "not a child of this shell" and never returns.
+    local pids=()
     for i in $(seq 2 254); do
         (timeout 1 bash -c "exec 3<>/dev/tcp/$base.$i/22" 2>/dev/null && echo "$base.$i") &
+        pids+=("$!")
     done >"$RUN/.sweep" 2>/dev/null
-    wait
+    wait "${pids[@]}" 2>/dev/null || true
     while read -r ip; do
         _is_ipad "$ip" && { echo "$ip"; rm -f "$RUN/.sweep"; return 0; }
     done < "$RUN/.sweep"

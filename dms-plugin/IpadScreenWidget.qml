@@ -73,10 +73,15 @@ PluginComponent {
             spacing: Theme.spacingXS
 
             DankIcon {
+                id: spinIcon
+
                 name: root.pillIcon
                 size: root.iconSize
                 color: root.pillColor
                 anchors.verticalCenter: parent.verticalCenter
+                // NativeRendering renders the glyph through the glyph cache and
+                // ignores the transform, so a rotated icon comes out sheared.
+                smoothTransform: true
 
                 RotationAnimator on rotation {
                     running: root.busy
@@ -84,6 +89,17 @@ PluginComponent {
                     to: 360
                     duration: 1200
                     loops: Animation.Infinite
+                }
+
+                // An Animator writes rotation on the render thread and leaves it
+                // wherever it stopped. Without this the idle icon keeps whatever
+                // angle the last spin ended on.
+                Connections {
+                    target: root
+                    function onBusyChanged() {
+                        if (!root.busy)
+                            spinIcon.rotation = 0;
+                    }
                 }
             }
 
